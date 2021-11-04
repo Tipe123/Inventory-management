@@ -1,8 +1,9 @@
 from django.shortcuts import redirect, render
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-from .models import Product
+from .models import Product , Order
 from .forms import ProductForm
+from django.contrib.auth.models import User
 # Create your views here.
 
 @login_required(login_url = 'account:login')
@@ -11,8 +12,21 @@ def index(request):
 
 @login_required(login_url = 'account:login')
 def staff(request):
-    return render(request , 'dashboard/staff.html')
+    workers = User.objects.all()
+    context = {
+        'workers': workers
+    }
+    return render(request, 'dashboard/staff.html', context)
 
+@login_required(login_url = 'account:login')
+def staff_detail(request, pk):
+    worker = User.objects.get(id = pk)
+    context = {
+        'worker': worker
+    }
+    return render(request, 'dashboard/staff_detail.html', context) 
+
+ 
 @login_required(login_url = 'account:login')
 def product(request):
     count = 1
@@ -35,9 +49,6 @@ def product(request):
     }
     return render(request , 'dashboard/product.html',context)
 
-@login_required(login_url = 'account:login')
-def order(request):
-    return render(request , 'dashboard/order.html')
 
 
 @login_required(login_url = 'account:login')
@@ -63,3 +74,11 @@ def product_update(request , pk):
         'form':form
     }
     return render(request , "dashboard/product_update.html",context)
+
+@login_required(login_url = 'account:login')
+def order(request):
+    orders = Order.objects.all()
+    context = {
+        'orders':orders
+    }
+    return render(request , 'dashboard/order.html',context)
